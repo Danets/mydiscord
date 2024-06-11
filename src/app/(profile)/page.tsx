@@ -3,6 +3,7 @@ import { initialProfile } from "@/lib/initial-profile";
 import { redirect } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { ModeToggle } from "@/components/mode-toogle";
+import { InitModal } from "@/components/modals/init-modal";
 
 export default async function ProfilePage() {
   const profile = await initialProfile();
@@ -19,12 +20,5 @@ export default async function ProfilePage() {
 
   if (server) return redirect(`/servers/${server.id}`);
 
-  return (
-    <div>
-      <ModeToggle />
-      <div className="mt-2">
-        <UserButton afterSignOutUrl="/" />
-      </div>
-    </div>
-  );
+  return <InitModal />;
 }
