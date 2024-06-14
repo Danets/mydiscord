@@ -22,6 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -35,6 +36,12 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>;
 
 export const InitModal = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const form = useForm<Schema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,6 +55,10 @@ export const InitModal = () => {
   const onSubmit = async (data: Schema) => {
     console.log(data);
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Dialog open>
