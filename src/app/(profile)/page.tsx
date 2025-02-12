@@ -1,8 +1,6 @@
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
-import { ModeToggle } from "@/components/mode-toogle";
 import { InitModal } from "@/components/modals/init-modal";
 
 export default async function ProfilePage() {
