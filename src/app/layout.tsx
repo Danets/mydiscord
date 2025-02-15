@@ -25,7 +25,7 @@ export default function RootLayout({
           <main>
             <ThemeProvider
               attribute="class"
-              defaultTheme="dark"
+              defaultTheme="light"
               enableSystem={false}
               storageKey="dickord-theme"
             >
