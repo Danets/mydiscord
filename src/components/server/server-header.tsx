@@ -5,12 +5,16 @@ import { ServerWithMembersWithProfiles } from "../../../types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, PlusCircle, Settings, Trash, UserPlus, Users } from "lucide-react";
 
+import { useModal } from "../../../hooks/use-modal-store";
+
 interface ServerHeaderProps {
     server: ServerWithMembersWithProfiles;
     role?: MemberRole;
 }
 
 export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
+    const { onOpen } = useModal();
+
     const isAdmin = role === MemberRole.admin;
     const isModerator = isAdmin || role === MemberRole.moderator;
     return (
@@ -25,7 +29,8 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 text-xs font-medium text-black
              dark:text-neutral-400 space-y-[2px]" align="end">
-                {isModerator && (<DropdownMenuItem className="text-indigo-500 dark:text-indigo-400
+                {isModerator && (<DropdownMenuItem onClick={() => onOpen('invitePeople', { server })}
+                    className="text-indigo-500 dark:text-indigo-400
                  px-3 py-2 text-sm cursor-pointer">
                     Invite People
                     <UserPlus className="w-4 h-4 ml-auto" />
