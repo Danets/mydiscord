@@ -38,6 +38,8 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    return NextResponse.json(server);
   } catch (error) {
     console.error("SERVERS POST", error);
     return new NextResponse("Internal Server Error", { status: 500 });
