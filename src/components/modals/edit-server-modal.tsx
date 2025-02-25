@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/form";
 
 import { FileUpload } from "@/components/file-upload";
+import { format } from "path";
 
 const formSchema = z.object({
     name: z.string().min(3, {
@@ -41,9 +43,11 @@ const formSchema = z.object({
 
 type Schema = z.infer<typeof formSchema>;
 
-export const CreateServerModal = () => {
-    const { type, isOpen, onClose } = useModal();
-    const isModalOpen = isOpen && type === "createServer";
+export const EditServerModal = () => {
+    const { type, isOpen, onClose, data } = useModal();
+    const isModalOpen = isOpen && type === "editServer";
+
+    const { server } = data;
 
     const router = useRouter();
 
@@ -55,11 +59,20 @@ export const CreateServerModal = () => {
         },
     });
 
+    useEffect(() => {
+        if (server) {
+            form.reset({
+                name: server?.name,
+                imageUrl: server?.imageUrl,
+            });
+        }
+    }, [server, form]);
+
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (data: Schema) => {
         try {
-            await axios.post('/api/servers', data);
+            await axios.patch(`/api/servers/${server?.id}`, data);
             form.reset();
             router.refresh();
             onClose();
@@ -78,7 +91,7 @@ export const CreateServerModal = () => {
             <DialogContent className="bg-white text-black p-4 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Create Server
+                        Edit Server
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500">
                         Give your server name and image. You can always change it later.
@@ -124,7 +137,7 @@ export const CreateServerModal = () => {
                         />
                         <DialogFooter className="bg-gray-100 px-6 py-4">
                             <Button variant="primary" disabled={isLoading} type="submit">
-                                Create
+                                Save
                             </Button>
                         </DialogFooter>
                     </form>

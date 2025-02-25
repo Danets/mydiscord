@@ -49,7 +49,5 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
 
     if (server) return redirect(`/servers/${server.id}`);
 
-    return (
-        <div>InviteCodePage</div>
-    )
+    return null;
 }
