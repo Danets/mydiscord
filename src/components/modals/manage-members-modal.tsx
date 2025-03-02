@@ -1,5 +1,15 @@
 "use client";
 
+import queryString from 'query-string';
+import axios from 'axios';
+import { Check, Gavel, Loader2, MoreVertical, Shield, ShieldAlert, ShieldCheck, ShieldQuestion } from "lucide-react";
+
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
+
+import { MemberRole } from "@prisma/client";
+import { ServerWithMembersWithProfiles } from "../../../types";
+
 import { useModal } from "../../../hooks/use-modal-store";
 
 import {
@@ -10,23 +20,56 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { ServerWithMembersWithProfiles } from "../../../types";
 import { UserAvatar } from "@/components/user-avatar";
-import { ShieldCheck } from "lucide-react";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const roleIconMap = {
     "guest": null,
     "moderator": <ShieldCheck className="w-4 h-4 ml-2 text-indigo-500" />,
-    "admin": <ShieldCheck className="w-4 h-4 ml-2 text-rose-500" />,
+    "admin": <ShieldAlert className="w-4 h-4 ml-2 text-rose-500" />,
 }
 
 export const ManageMembersModal = () => {
+    const router = useRouter();
     const { type, isOpen, onOpen, onClose, data } = useModal();
+    const [loadingId, setLoadingId] = useState("");
 
     const isModalOpen = isOpen && type === "manageMembers";
-
     const { server } = data as { server: ServerWithMembersWithProfiles };
+
+    const onRoleChange = async (role: MemberRole, memberId: string) => {
+        try {
+            setLoadingId(memberId);
+            const url = queryString.stringifyUrl({
+                url: `/api/members/${memberId}`,
+                query: {
+                    serverId: server.id,
+                    memberId
+                },
+            })
+
+            const res = await axios.patch(url, { role });
+            router.refresh();
+            onOpen("manageMembers", { server: res.data });
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingId("");
+        }
+    }
 
     return (
         <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -52,6 +95,45 @@ export const ManageMembersModal = () => {
                                     {member.profile.email}
                                 </p>
                             </div>
+                            {server.profileId !== member.profileId && loadingId !== member.id && (
+                                <div className="ml-auto">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <MoreVertical className="w-4 h-4 text-zinc-500" />
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent side="left">
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger className="flex items-center px-3 py-2 text-sm cursor-pointer">
+                                                    <ShieldQuestion className="w-4 h-4 mr-2" />
+                                                    <span>Role</span>
+                                                </DropdownMenuSubTrigger>
+                                                <DropdownMenuPortal>
+                                                    <DropdownMenuSubContent>
+                                                        <DropdownMenuItem onClick={() => onRoleChange("guest", member.id)}>
+                                                            <Shield className="w-4 h-4 mr-2" />
+                                                            Guest
+                                                            {member.role === "guest" && <Check className="w-4 h-4 ml-auto" />}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => onRoleChange("moderator", member.id)}>
+                                                            <ShieldCheck className="w-4 h-4 mr-2" />
+                                                            Moderator
+                                                            {member.role === "moderator" && <Check className="w-4 h-4 ml-auto" />}
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuSubContent>
+                                                </DropdownMenuPortal>
+                                            </DropdownMenuSub>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>
+                                                <Gavel className="w-4 h-4 mr-2" />
+                                                Kick
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            )}
+                            {loadingId === member.id && (
+                                <Loader2 className="w-4 h-4 ml-auto text-zinc-500 animate-spin" />
+                            )}
                         </div>
                     ))}
                 </ScrollArea>
