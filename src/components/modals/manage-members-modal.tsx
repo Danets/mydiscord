@@ -49,16 +49,35 @@ export const ManageMembersModal = () => {
     const isModalOpen = isOpen && type === "manageMembers";
     const { server } = data as { server: ServerWithMembersWithProfiles };
 
+    const setQuery = (memberId: string): string => {
+        setLoadingId(memberId);
+        const url = queryString.stringifyUrl({
+            url: `/api/members/${memberId}`,
+            query: {
+                serverId: server.id,
+            },
+        });
+        return url;
+    }
+
+    const onKick = async (memberId: string) => {
+        try {
+            const url = setQuery(memberId);
+
+            const res = await axios.delete(url);
+            router.refresh();
+            onOpen("manageMembers", { server: res.data });
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingId("");
+        }
+    }
+
     const onRoleChange = async (role: MemberRole, memberId: string) => {
         try {
-            setLoadingId(memberId);
-            const url = queryString.stringifyUrl({
-                url: `/api/members/${memberId}`,
-                query: {
-                    serverId: server.id,
-                    memberId
-                },
-            })
+            const url = setQuery(memberId);
 
             const res = await axios.patch(url, { role });
             router.refresh();
@@ -123,7 +142,7 @@ export const ManageMembersModal = () => {
                                                 </DropdownMenuPortal>
                                             </DropdownMenuSub>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onKick(member.id)}>
                                                 <Gavel className="w-4 h-4 mr-2" />
                                                 Kick
                                             </DropdownMenuItem>
