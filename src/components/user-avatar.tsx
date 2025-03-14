@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
     src?: string;
+    alt?: string;
     className?: string;
 }
 
