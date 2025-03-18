@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,7 +51,8 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>;
 
 export const CreateChannelModal = () => {
-    const { type, isOpen, onClose } = useModal();
+    const { type, isOpen, onClose, data: { channelType } } = useModal();
+    // const { channelType } = data;
     const isModalOpen = isOpen && type === "createChannel";
 
     const router = useRouter();
@@ -63,6 +65,14 @@ export const CreateChannelModal = () => {
             type: ChannelType.text,
         },
     });
+
+    useEffect(() => {
+        if (channelType) {
+            form.setValue("type", channelType);
+        } else {
+            form.setValue("type", ChannelType.text);
+        }
+    }, [channelType, form]);
 
     const isLoading = form.formState.isSubmitting;
 
