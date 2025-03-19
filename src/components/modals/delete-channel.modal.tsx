@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import axios from "axios";
+
+import queryString from 'query-string';
 
 import { useModal } from "../../../hooks/use-modal-store";
 
@@ -18,23 +20,30 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-export const DeleteServerModal = () => {
+export const DeleteChannelModal = () => {
     const { type, isOpen, onClose, data } = useModal();
     const router = useRouter();
 
-    const isModalOpen = isOpen && type === "deleteServer";
+    const isModalOpen = isOpen && type === "deleteChannel";
 
-    const { server } = data;
+    const { server, channel } = data;
 
     const [isLoading, setLoading] = useState(false);
 
     const onConfirm = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/servers/${server?.id}`);
-            onClose();
+
+            // const url = queryString.stringifyUrl({
+            //     url: `/api/channels/${channel.id}`,
+            //     query: {
+            //         serverId: server?.id,
+            //     },
+            // });
+
+            await axios.delete(`/api/channels/${channel?.id}?serverId=${server?.id}`);
             router.refresh();
-            router.push("/");
+            onClose();
         } catch (error) {
             console.error(error);
         } finally {
@@ -47,11 +56,11 @@ export const DeleteServerModal = () => {
             <DialogContent className="bg-white text-black p-4 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Delete Server
+                        Delete Channel
                     </DialogTitle>
                     <DialogDescription className="text-zinc-500 text-center">
-                        Are you sure you want to delete this
-                        <span className="text-indigo-500 font-semibold ml-1">{server?.name}</span>?
+                        Are you sure you want to delete this <br />
+                        <span className="text-indigo-500 font-semibold ml-1">{channel?.name}</span>?
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="bg-gray-100 px-6 py-4">
