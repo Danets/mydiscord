@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import axios from "axios";
 
@@ -34,14 +34,14 @@ export const DeleteChannelModal = () => {
         try {
             setLoading(true);
 
-            // const url = queryString.stringifyUrl({
-            //     url: `/api/channels/${channel.id}`,
-            //     query: {
-            //         serverId: server?.id,
-            //     },
-            // });
+            const url = queryString.stringifyUrl({
+                url: `/api/channels/${channel?.id}`,
+                query: {
+                    serverId: server?.id,
+                },
+            });
 
-            await axios.delete(`/api/channels/${channel?.id}?serverId=${server?.id}`);
+            await axios.delete(url);
             router.refresh();
             onClose();
         } catch (error) {
