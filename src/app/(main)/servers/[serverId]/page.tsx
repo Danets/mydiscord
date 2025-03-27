@@ -17,8 +17,6 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
 
     if (!profile) return <RedirectToSignIn />;
 
-    if (!serverId) return redirect('/');
-
     const server = await db.server.findUnique({
         where: {
             id: serverId,
