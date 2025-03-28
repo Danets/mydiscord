@@ -65,6 +65,12 @@ model Member {
   serverId String @db.ObjectId
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  messages       Message[]
+  directMessages DirectMessage[]
+
+  conversationsInitiated Conversation[] @relation("memberOne")
+  conversationsReceived  Conversation[] @relation("memberTwo")
+
   @@index([profileId])
   @@index([serverId])
 }
@@ -89,6 +95,59 @@ model Channel {
   serverId String @db.ObjectId
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  messages Message[]
+
   @@index([profileId])
   @@index([serverId])
+}
+
+model Message {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  fileUrl String? @db.String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberId String @db.ObjectId
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String  @db.ObjectId
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
+
+  @@index([memberId])
+  @@index([channelId])
+}
+
+model Conversation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  memberOneId String @db.ObjectId
+  memberOne   Member @relation("memberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+
+  memberTwoId String @db.ObjectId
+  memberTwo   Member @relation("memberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+
+  directMessages DirectMessage[]
+
+  @@unique([memberOneId, memberTwoId])
+}
+
+model DirectMessage {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  fileUrl String? @db.String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberId String @db.ObjectId
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
 }
