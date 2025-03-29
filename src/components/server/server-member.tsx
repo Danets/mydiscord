@@ -40,7 +40,7 @@ export const ServerMember = ({ member, server }: ServerMemberProps) => {
             <p className={cn("line-clamp-1 text-sm text-zinc-500 font-semibold dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition",
                 params?.memberId === member.id && "text-primary dark:text-zinc-200 group-hover:text-white"
             )}>
-                {member.profile.name}
+                {member.profile.name === 'null null' ? member.profile.email : member.profile.name}
             </p>
             {icon}
         </button>
