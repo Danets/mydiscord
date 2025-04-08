@@ -2,18 +2,15 @@ import { Server as NetServer } from "http";
 import { Server as SocketServer } from "socket.io";
 import { NextApiRequest } from "next";
 
-import { NextApiResponseWithSocket } from "../../../types";
+import { NextApiResponseWithSocket } from "../../../../types";
 
-export const cofig = {
+export const config = {
   api: {
     bodyParser: false,
   },
 };
 
-export const ioHandler = (
-  req: NextApiRequest,
-  res: NextApiResponseWithSocket
-) => {
+const SocketHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
   if (!res.socket.server.io) {
     const path = "/api/socket/io";
     const httpServer: NetServer = res.socket.server as any;
@@ -25,3 +22,5 @@ export const ioHandler = (
   }
   res.end();
 };
+
+export default SocketHandler;

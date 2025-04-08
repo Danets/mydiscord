@@ -1,11 +1,11 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { useSocket } from "@/components/providers/socket-provider";
+import { useWebSocketConnectionHook } from "../../hooks/use-socket";
 
 export const SocketIndicator = () => {
 
-    const { isConnected } = useSocket();
+    const { isConnected } = useWebSocketConnectionHook();
 
     if (!isConnected) {
         return (
