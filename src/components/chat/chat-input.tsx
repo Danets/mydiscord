@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Plus, Smile } from "lucide-react";
+import { useModal } from "../../../hooks/use-modal-store";
 
 type ChatInputProps = {
     apiUrl: string;
@@ -40,7 +41,8 @@ export const ChatInput = ({
 }: ChatInputProps) => {
 
     const router = useRouter();
-    const params = useParams();
+
+    const { onOpen } = useModal();
 
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
@@ -55,7 +57,7 @@ export const ChatInput = ({
         try {
             const url = queryString.stringifyUrl({
                 url: apiUrl,
-                query: query,
+                query: query as Record<string, any>,
             });
 
             await axios.post(url, data);
@@ -78,7 +80,7 @@ export const ChatInput = ({
                                 <div className="relative p-4 pb-6">
                                     <button
                                         type="button"
-                                        onClick={() => { }}
+                                        onClick={() => onOpen("messageFile", { apiUrl, query })}
                                         className="flex items-center justify-center p-1 absolute top-7 left-8 h-6 w-6
                                          transition-all rounded-full
                                          bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300">

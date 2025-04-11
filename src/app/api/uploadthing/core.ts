@@ -4,8 +4,9 @@ import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-const handleAuth = () => {
-  const { userId } = auth();
+const handleAuth = async () => {
+  const { userId } = await auth();
+  console.log("userId", userId);
   if (!userId) {
     throw new UploadThingError("Unauthorized");
   }
@@ -19,10 +20,10 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   })
-    .middleware(() => handleAuth())
+    .middleware(async () => await handleAuth())
     .onUploadComplete(() => {}),
   messageFile: f(["image", "pdf"])
-    .middleware(() => handleAuth())
+    .middleware(async () => await handleAuth())
     .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
