@@ -69,7 +69,7 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
                 </p>
                 <kbd className="inline-flex items-center gap-1 h-6 px-1.5 py-2 rounded border ml-auto
                  font-mono text-[10px] bg-muted text-muted-foreground pointer-events-none select-none">
-                    <span className="text-xs">CTRL(CMD for MAC)</span>k
+                    <span className="text-xs">CTRL</span>k
                 </kbd>
             </button>
             <CommandDialog open={open} onOpenChange={setOpen}>
