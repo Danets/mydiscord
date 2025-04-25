@@ -86,6 +86,7 @@ export const ChatItem = ({
                 query: socketQuery as Record<string, any>,
             });
             await axios.patch(url, data);
+            form.reset();
             SetIsEditing(false);
         } catch (error) {
             console.log(error);
