@@ -26,6 +26,7 @@ import {
 
 import { UserAvatar } from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
+import { useModal } from "../../../hooks/use-modal-store";
 
 interface ChatItemProps {
     id: string;
@@ -67,7 +68,8 @@ export const ChatItem = ({
     socketUrl,
     socketQuery,
 }: ChatItemProps) => {
-    const [isDeleting, SetIsDeleting] = useState(false);
+    const { onOpen } = useModal();
+
     const [isEditing, SetIsEditing] = useState(false);
 
     const form = useForm<Schema>({
@@ -92,6 +94,14 @@ export const ChatItem = ({
             console.log(error);
         }
     };
+
+    const onDeleteMessage = () => {
+        const apiUrl = queryString.stringifyUrl({
+            url: `${socketUrl}/${id}`,
+            query: socketQuery,
+        });
+        onOpen("deleteMessage", { apiUrl })
+    }
 
     useEffect(() => {
         form.reset({
@@ -230,7 +240,7 @@ export const ChatItem = ({
                         <Trash
                             className="w-4 h-4 ml-auto text-zinc-500 hover:text-zinc-600
                              dark:hover:text-zinc-300 transition cursor-pointer"
-                            onClick={() => SetIsDeleting(true)} />
+                            onClick={onDeleteMessage} />
                     </ActionTooltip>
                 </div>
             )}

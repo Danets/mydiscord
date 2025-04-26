@@ -138,8 +138,6 @@ export async function DELETE(
     const channelId = searchParams.get("channelId");
     const serverId = searchParams.get("serverId");
 
-    const { content } = await request.json();
-
     const profile = await currentProfile();
 
     if (!profile) {
