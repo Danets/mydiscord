@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
+import { getSocket } from "@/lib/socket-client";
+
 import { MemberRole } from "@prisma/client";
 
 export async function PATCH(
@@ -118,9 +120,14 @@ export async function PATCH(
         },
       },
     });
+    const socket = getSocket();
+
+    if (!socket) {
+      return new NextResponse("Socket not found", { status: 500 });
+    }
 
     const updateKey = `chat:${channelId}:messages:update`;
-    // res?.socket?.server?.io?.emit(updateKey, updatedMessage);
+    socket.emit(updateKey, updatedMessage);
 
     return NextResponse.json(updatedMessage, { status: 200 });
   } catch (error) {
@@ -244,8 +251,14 @@ export async function DELETE(
       },
     });
 
-    const updateKey = `chat:${channelId}:messages:update`;
-    // res?.socket?.server?.io?.emit(updateKey, deletedMessage);
+    const socket = getSocket();
+
+    if (!socket) {
+      return new NextResponse("Socket not found", { status: 500 });
+    }
+
+    const deleteKey = `chat:${channelId}:messages:delete`;
+    socket.emit(deleteKey, deletedMessage);
 
     return NextResponse.json(deletedMessage, { status: 200 });
   } catch (error) {

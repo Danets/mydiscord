@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
-import { NextApiResponseWithSocket } from "../../../../../types";
+import { getSocket } from "@/lib/socket-client";
 
-export async function POST(req: NextRequest, res: NextApiResponseWithSocket) {
+export async function POST(req: NextRequest) {
   try {
     const profile = await currentProfile();
     const { content, fileUrl } = await req.json();
@@ -97,9 +97,14 @@ export async function POST(req: NextRequest, res: NextApiResponseWithSocket) {
       },
     });
 
-    const channelKey = `channel:${channelId}:messages`;
+    const socket = getSocket();
 
-    res.socket?.server?.io?.emit(channelKey, message);
+    if (!socket) {
+      return new NextResponse("Socket not found", { status: 500 });
+    }
+
+    const channelKey = `channel:${channelId}:messages`;
+    socket.emit(channelKey, message);
 
     return NextResponse.json(message, { status: 200 });
   } catch (error) {
