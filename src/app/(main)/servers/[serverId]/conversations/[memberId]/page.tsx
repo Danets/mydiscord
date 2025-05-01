@@ -5,6 +5,8 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { getOrCreateConversation } from "@/lib/conversation";
 import { ChatHeader } from "@/components/chat/chat-header";
+import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChatInput } from "@/components/chat/chat-input";
 
 interface MemberIdPageProps {
     params: Promise<{
@@ -50,5 +52,25 @@ export default async function MemberlIdPage({ params }: MemberIdPageProps) {
             name={otherMember.profile.name === 'null null' ? otherMember.profile.email : otherMember.profile.name}
             type="conversation"
         />
+        <ChatMessages
+            name={otherMember.profile.name === 'null null' ? otherMember.profile.email : otherMember.profile.name}
+            member={currentMember}
+            chatId={conversation.id}
+            apiUrl="/api/direct-messages"
+            paramKey="conversationId"
+            paramValue={conversation.id}
+            type="conversation"
+            socketUrl="/api/socket/direct-messages"
+            socketQuery={{
+                conversationId: conversation.id,
+            }}
+        />
+        <ChatInput
+            name={otherMember.profile.name === 'null null' ? otherMember.profile.email : otherMember.profile.name}
+            apiUrl="/api/socket/direct-messages"
+            query={{
+                conversationId: conversation.id,
+            }}
+            type="conversation" />
     </div>;
 }
